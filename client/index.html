@@ -1,0 +1,160 @@
+<!-- <!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tower Brawl</title>
+  <link rel="stylesheet" href="/src/ui/home.css">
+  <link rel="stylesheet" href="/src/ui/lobby.css">
+</head>
+<body>
+
+  // #### HOME ####
+  <div id="home-screen" class="screen">
+    <h1>Tower Brawl</h1>
+
+    <button id="play-btn" class="btn primary">
+      Jouer
+    </button>
+
+    <div class="private-container">
+      <button id="create-private-btn" class="btn secondary">
+        Créer une partie privée
+      </button>
+
+      <input type="text" id="private-code" placeholder="Code privé">
+
+      <button id="join-private-btn" class="btn tertiary">
+        Rejoindre
+      </button>
+    </div>
+  </div>
+
+  // #### LOBBY ####
+  <div id="lobby-screen" class="screen" style="display:none;">
+    <h2>Lobby</h2>
+
+    <div id="room-code-container" class="room-code" style="display:none;">
+      Code : <span id="room-code"></span>
+      <button id="copy-code-btn" class="btn mini">Copier</button>
+    </div>
+
+    <div id="players-list" class="panel players"></div>
+
+    <div class="panel chat-container">
+      <div id="chat-messages" class="chat-messages"></div>
+
+      <div class="chat-input">
+        <input id="chat-text" type="text" placeholder="Message...">
+        <button id="chat-send-btn" class="btn mini">Envoyer</button>
+      </div>
+    </div>
+
+    <button id="ready-btn" class="btn primary">
+      READY
+    </button>
+
+    <button id="leave-btn" class="btn secondary">
+      Quitter
+    </button>
+  </div>
+
+  // #### GAME ####
+  <div id="phaser-container" style="display:none;"></div>
+
+  <script type="module" src="/src/index.ts"></script>
+</body>
+<body>
+  <div id="home-screen">
+    <h1>Tower Brawl</h1>
+    <button id="play-btn">Jouer</button>
+  </div>
+
+  <div id="lobby-screen" class="hidden">
+    <div id="players-list"></div>
+
+    <div id="chat">
+      <div id="chat-messages"></div>
+      <input id="chat-text" />
+      <button id="chat-send-btn">Envoyer</button>
+    </div>
+
+    <button id="ready-btn">Ready</button>
+    <button id="leave-btn">Quitter</button>
+  </div>
+
+  <script type="module" src="/src/index.ts"></script>
+</body>
+</html> -->
+
+
+
+
+
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tower Brawl</title>
+  <link rel="stylesheet" href="/src2/styles/styles.css">
+</head>
+<body>
+
+  <!-- HOME -->
+  <div id="home-screen" class="screen">
+    <header>
+      <h1>Tower Brawl</h1>
+      <p class="subtitle">Tower Defense compétitif — invite tes amis ou joue en public</p>
+    </header>
+
+    <div class="home-actions">
+      <button id="play-btn" class="btn primary">Jouer</button>
+      <button id="create-private-btn" class="btn secondary">Créer une partie privée</button>
+      <div class="join-row">
+        <input id="private-code" placeholder="Code privé (ex: ABC12)" />
+        <button id="join-private-btn" class="btn tertiary">Rejoindre</button>
+      </div>
+    </div>
+
+    <section class="leaderboard-panel">
+      <h3>Classement mondial</h3>
+      <div id="leaderboard" class="leaderboard"></div>
+    </section>
+  </div>
+
+  <!-- LOBBY -->
+  <div id="lobby-screen" class="screen hidden">
+    <div class="lobby-left">
+      <div class="lobby-header">
+        <h2>Lobby</h2>
+        <div id="room-code-container" class="room-code hidden">
+          Code : <span id="room-code"></span>
+          <button id="copy-code-btn" class="btn mini">Copier</button>
+        </div>
+      </div>
+
+      <div id="players-list" class="players-list"></div>
+
+      <div class="lobby-controls">
+        <button id="ready-btn" class="btn primary">Ready</button>
+        <button id="leave-btn" class="btn secondary">Quitter</button>
+        <div id="countdown" class="countdown hidden">00</div>
+      </div>
+    </div>
+
+    <div class="lobby-right">
+      <div class="chat-panel">
+        <h4>Chat</h4>
+        <div id="chat-messages" class="chat-messages"></div>
+        <div class="chat-input-row">
+          <input id="chat-text" placeholder="Message..." />
+          <button id="chat-send-btn" class="btn mini">Envoyer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src2/index.ts"></script>
+</body>
+</html>

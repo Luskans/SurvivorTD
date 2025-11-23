@@ -1,0 +1,141 @@
+:root{
+  --bg:#f6f9ff;
+  --panel:#ffffff;
+  --primary:#6aa0ff;    /* bleu pastel */
+  --accent:#ff9fcf;     /* rose clair */
+  --muted:#9aa8c3;
+  --text:#1b2b44;
+  --success:#66cc88;
+  --danger:#ff6b6b;
+  --radius:12px;
+  --gap:12px;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  background: linear-gradient(180deg, #eef6ff 0%, #fff0f6 100%);
+  color:var(--text);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+
+/* Screen base */
+.screen{
+  width:100%;
+  max-width:1100px;
+  background:transparent;
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+
+/* HOME */
+#home-screen header{
+  text-align:center;
+}
+h1{
+  margin:0;
+  font-size:40px;
+  color:var(--text);
+}
+.subtitle{
+  margin:6px 0 0;
+  color:var(--muted);
+}
+
+/* Actions */
+.home-actions{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  justify-content:center;
+  margin-top:8px;
+  flex-wrap:wrap;
+}
+.join-row{ display:flex; gap:8px; align-items:center; }
+input{ padding:10px 12px; border-radius:10px; border:1px solid #e3e8f0; outline:none; font-size:14px; }
+input:focus{ box-shadow:0 0 0 4px rgba(106,160,255,0.12); }
+
+/* Buttons */
+.btn{
+  border: none;
+  padding:10px 16px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+  transition: transform .08s ease, opacity .12s ease;
+}
+.btn:hover{ transform: translateY(-2px); }
+.btn:active{ transform: translateY(0); }
+
+.btn.primary{ background:var(--primary); color:white; box-shadow: 0 6px 18px rgba(106,160,255,0.12); }
+.btn.secondary{ background:var(--accent); color:white; }
+.btn.tertiary{ background:#fff; color:var(--text); border:1px solid #eee; }
+.btn.mini{ padding:6px 10px; font-size:13px; border-radius:8px; }
+
+/* Leaderboard */
+.leaderboard-panel{
+  margin-top:10px;
+  background:var(--panel);
+  border-radius:var(--radius);
+  padding:12px;
+  box-shadow: 0 6px 18px rgba(27,43,68,0.06);
+}
+.leaderboard{
+  max-height:220px; overflow:auto; margin-top:8px; display:flex; flex-direction:column; gap:8px;
+}
+.leader-row{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:8px; border-radius:8px;
+}
+.leader-row.self{ background: linear-gradient(90deg, rgba(106,160,255,0.08), rgba(255,159,207,0.04)); }
+
+/* LOBBY layout */
+#lobby-screen{
+  display:flex; gap:18px;
+}
+.lobby-left{ flex:1; display:flex; flex-direction:column; gap:12px; }
+.lobby-right{ width:360px; }
+
+.lobby-header{ display:flex; align-items:center; gap:12px; justify-content:space-between; }
+.room-code{ font-weight:700; color:var(--muted); }
+
+/* Players list */
+.players-list{
+  background:var(--panel); border-radius:12px; padding:12px; min-height:220px; box-shadow:0 6px 18px rgba(27,43,68,0.04);
+  display:flex; flex-direction:column; gap:8px;
+}
+.player-entry{
+  display:flex; align-items:center; gap:8px; justify-content:space-between;
+  padding:8px; border-radius:8px;
+  border:1px solid #f1f4f9;
+}
+.player-entry .meta{ color:var(--muted); font-size:13px; }
+.player-entry.host{ outline: 2px solid rgba(255,159,207,0.12); }
+
+/* Lobby controls */
+.lobby-controls{ display:flex; align-items:center; gap:12px; margin-top:6px; }
+.countdown{
+  margin-left:auto; font-weight:800; padding:8px 12px; border-radius:8px; background:linear-gradient(90deg,#fff4f9,#f0f8ff);
+}
+
+/* Chat */
+.chat-panel{ background:var(--panel); padding:12px; border-radius:12px; box-shadow:0 6px 18px rgba(27,43,68,0.04); display:flex; flex-direction:column; gap:8px; height:520px; }
+.chat-messages{ flex:1; overflow:auto; padding:8px; border-radius:8px; background:linear-gradient(180deg,#fbfcff,#ffffff); }
+.chat-messages div{ margin-bottom:6px; }
+.chat-messages .sys{ color:var(--muted); font-style:italic; font-size:13px; }
+.chat-input-row{ display:flex; gap:8px; align-items:center; }
+
+/* Hidden helper */
+.hidden{ display:none !important; }
+
+/* responsive */
+@media (max-width:960px){
+  #lobby-screen{ flex-direction:column; }
+  .lobby-right{ width:100%; }
+}
