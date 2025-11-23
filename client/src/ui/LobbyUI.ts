@@ -1,133 +1,130 @@
-// import { network } from "../networking/NetworkService";
-// import { ScreenManager } from "./ScreenManager";
-// import { getStateCallbacks } from "colyseus.js";
-// import { ChatUI } from "./ChatUI";
-
-// export class LobbyUI {
-//   private countdown: number | null = null;
-//   private chatUI: ChatUI;
-
-//   constructor() {
-//     this.chatUI = new ChatUI(network.room!);
-//     this.initListeners();
-//     this.refreshPlayers();
-//   }
-
-//   initListeners() {
-//     const room = network.room!;
-//     const $ = getStateCallbacks(room);
-
-//     const readyBtn = document.getElementById("ready-btn")!;
-//     readyBtn.onclick = () => network.toggleReady();
-
-//     document.getElementById("leave-btn")!.onclick = () => {
-//       if (this.countdown && this.countdown <= 3) return;
-//       network.leaveRoom();
-//       ScreenManager.show("home-screen");
-//     };
-
-//     $(room.state.players).onAdd(() => this.refreshPlayers());
-//     $(room.state.players).onRemove(() => this.refreshPlayers());
-//     $(room.state.players).onChange(() => this.refreshPlayers());
-
-//     room.onMessage("countdown", (sec) => this.handleCountdown(sec));
-//   }
-
-//   refreshPlayers() {
-//     const list = document.getElementById("players-list")!;
-//     list.innerHTML = "";
-
-//     network.room!.state.players.forEach(p => {
-//       const div = document.createElement("div");
-//       div.className = "player-entry";
-//       div.innerHTML = `
-//         <span class="name">${p.name}</span>
-//         <span class="elo">${p.elo}</span>
-//         <span class="state">${p.ready ? "✔" : "⏳"}</span>
-//         ${p.isHost ? "👑" : ""}
-//       `;
-//       list.appendChild(div);
-//     });
-//   }
-
-//   handleCountdown(sec: number) {
-//     this.countdown = sec;
-//     this.chatUI.systemMessage(`Début dans ${sec}…`);
-
-//     const readyBtn = document.getElementById("ready-btn")!;
-//     const leaveBtn = document.getElementById("leave-btn")!;
-
-//     if (sec <= 3) {
-//       readyBtn.setAttribute("disabled", "true");
-//       leaveBtn.setAttribute("disabled", "true");
-//     }
-//   }
-// }
-
-
-
-
-
-
-
 import { getStateCallbacks } from "colyseus.js";
 import { network } from "../networking/NetworkService";
 import { ChatUI } from "./ChatUI";
+import { ScreenManager } from "./ScreenManager";
 
-/**
- * LobbyUI is instantiated with a Colyseus Room instance (any)
- * It registers state callbacks and updates the DOM.
- */
 export class LobbyUI {
   private room: any;
   private chat: ChatUI;
   private countdownTimer: number | null = null;
   private locked = false;
+  private inviteBtn = document.getElementById("copy-invite-btn") as HTMLButtonElement;
 
   constructor(room: any) {
     this.room = room;
     this.chat = new ChatUI(room);
-    this.init();
+    // this.init();
+    this.listenButtons();
+    this.listenStates();
+    this.listenHost();
   }
 
-  init() {
-    this.setupButtons();
-    this.setupStateListeners();
+  // init() {
+  //   this.listenButtons();
+  //   this.listenStates();
+  // }
+
+
+  // listenHost() {
+  //   if (!this.inviteBtn) return;
+  //   this.inviteBtn.style.display = "none";
+
+  //   this.room.onMessage("host_changed", () => {
+  //     this.updateHostUI();
+  //   });
+
+  //   this.room.onStateChange(() => {
+  //     this.updateHostUI();
+  //   });
+
+  //   this.updateHostUI();
+  // }
+
+  listenHost() {
+    const isHost = this.room.sessionId === this.room.metadata?.hostSessionId;
+    const isPrivate = this.room.metadata?.isPrivate;
+
+    if (isHost && isPrivate) {
+      this.inviteBtn.style.display = "block";
+    } else {
+      this.inviteBtn.style.display = "none";
+    }
   }
 
-  setupButtons() {
+  updateHostUI() {
+    if (!this.room.state || !this.room.state.players) {
+      return; // State pas prête → on attend
+    }
+
+    const me = this.room.state.players.get(this.room.sessionId);
+    if (!me) return;
+
+    if (me.isHost) {
+      this.inviteBtn.style.display = "block";
+
+      // reset du listener pour éviter les doublons
+      const newEl = this.inviteBtn.cloneNode(true) as HTMLButtonElement;
+      this.inviteBtn.replaceWith(newEl);
+      this.inviteBtn = newEl;
+
+      this.inviteBtn.onclick = () => {
+        const inviteURL = `${window.location.origin}/private/${this.room.roomId}`;
+        navigator.clipboard.writeText(inviteURL)
+          .then(() => this.chat.systemMessage(`Room link copied to clipboard.`))
+          .catch(() => alert("Impossible de copier le lien"));
+      };
+    } else {
+      this.inviteBtn.style.display = "none";
+    }
+  }
+
+
+  // listenHost() {
+  //   const inviteBtn = document.getElementById("copy-invite-btn")!;
+
+  //   if (this.room.sessionId === this.hostSessionId) {
+  //     inviteBtn.style.display = "block";
+
+  //     inviteBtn.addEventListener("click", () => {
+  //       const inviteURL = `${window.location.origin}/private/${this.room.roomId}`;
+  //       // this.chat.systemMessage(`Copied room link to clipboard.`);
+  //       navigator.clipboard.writeText(inviteURL)
+  //         // .then(() => alert("Lien copié !"))
+  //         .then(() => this.chat.systemMessage(`Copied room link to clipboard.`))
+  //         .catch(() => alert("Impossible de copier le lien"));
+  //     });
+  //   }
+  // }
+
+  listenButtons() {
     const readyBtn = document.getElementById("ready-btn") as HTMLButtonElement;
     const leaveBtn = document.getElementById("leave-btn") as HTMLButtonElement;
 
     readyBtn.onclick = () => {
       if (this.locked) return;
       network.toggleReady();
+      // readyBtn.textContent = readyBtn.textContent === "Ready" ? "Not Ready" : "Ready";
     };
 
     leaveBtn.onclick = () => {
       if (this.locked) return;
       network.leaveRoom();
-      document.getElementById("room-code-container")?.classList.add("hidden");
-      document.getElementById("room-code")!.textContent = "";
-      // go back to home
-      document.getElementById("lobby-screen")!.classList.add("hidden");
-      document.getElementById("home-screen")!.classList.remove("hidden");
+      ScreenManager.show("home-screen");
     };
   }
 
-  setupStateListeners() {
+  listenStates() {
     const $ = getStateCallbacks(this.room);
+    let listenersAttached = false;
 
-    // players is a MapSchema on the server
-    // ensure existence before attaching
     const tryAttach = () => {
+      if (listenersAttached) return;
       if (!this.room.state || !this.room.state.players) return;
       const playersMap = this.room.state.players;
+      listenersAttached = true;
 
-      // attach add/remove/change
       $(playersMap).onAdd((p: any, sessionId: string) => {
         this.chat.systemMessage(`${p.name ?? sessionId} a rejoint le lobby`);
-        // attach change on player
         $(p).onChange(() => this.renderPlayers());
         this.renderPlayers();
       });
@@ -138,27 +135,22 @@ export class LobbyUI {
       });
 
       $(playersMap).onChange((p:any, key:string) => {
-        // general map change
         this.renderPlayers();
       });
 
-      // listen server countdown messages
       this.room.onMessage("countdown", (n:number) => this.onCountdown(n));
       this.room.onMessage("host_changed", (hostName:string) => {
         this.chat.systemMessage(`Nouveau host: ${hostName}`);
         this.renderPlayers();
       });
 
-      // initial render
       this.renderPlayers();
     };
 
-    // onStateChange to wait for initial state
     this.room.onStateChange(() => {
       tryAttach();
     });
 
-    // call immediately if already present
     tryAttach();
   }
 
@@ -169,20 +161,18 @@ export class LobbyUI {
     const players = this.room.state?.players;
     if (!players) return;
 
-    // players.forEach may not be a real array, use forEach if available
     try {
       players.forEach((p: any, id: string) => {
         const el = this.createPlayerRow(p, id);
         container.appendChild(el);
+
+        if (id === this.room.sessionId) {
+          const readyBtn = document.getElementById("ready-btn") as HTMLButtonElement;
+          readyBtn.textContent = p.ready ? "Not Ready" : "Ready";
+        }
       });
     } catch (e) {
-      // fallback
-      for (const k in players) {
-        if (Object.prototype.hasOwnProperty.call(players, k)) {
-          const p = players[k];
-          container.appendChild(this.createPlayerRow(p, k));
-        }
-      }
+      console.log("errorr creating players list");
     }
   }
 
@@ -192,23 +182,18 @@ export class LobbyUI {
     if (p.isHost) div.classList.add("host");
 
     const left = document.createElement("div");
-    left.innerHTML = `<div style="font-weight:700">${this.escape(p.name ?? id)}</div>
+    left.innerHTML = `<div style="font-weight:700">${p.isHost ? "👑" : ""}${this.escape(p.name ?? id)}</div>
                       <div class="meta">ELO: ${Number(p.elo ?? 1200)}</div>`;
 
     const right = document.createElement("div");
     right.style.display = "flex";
     right.style.gap = "8px";
+
     const state = document.createElement("div");
     state.textContent = p.ready ? "✔ READY" : "⏳";
     state.style.color = p.ready ? "var(--success)" : "var(--muted)";
+
     right.appendChild(state);
-
-    if (p.isHost) {
-      const crown = document.createElement("div");
-      crown.textContent = "👑";
-      right.appendChild(crown);
-    }
-
     div.appendChild(left);
     div.appendChild(right);
     return div;
@@ -224,7 +209,8 @@ export class LobbyUI {
       this.locked = true;
       (document.getElementById("ready-btn") as HTMLButtonElement).setAttribute("disabled","true");
       (document.getElementById("leave-btn") as HTMLButtonElement).setAttribute("disabled","true");
-      this.chat.systemMessage("Démarrage imminent : actions désactivées.");
+      this.chat.systemMessage(`Game starting in ..${sec}`);
+
     } else {
       this.locked = false;
       (document.getElementById("ready-btn") as HTMLButtonElement).removeAttribute("disabled");

@@ -97,7 +97,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Tower Brawl</title>
-  <link rel="stylesheet" href="/src2/styles/styles.css">
+  <link rel="stylesheet" href="/src/styles/styles.css">
 </head>
 <body>
 
@@ -105,56 +105,64 @@
   <div id="home-screen" class="screen">
     <header>
       <h1>Tower Brawl</h1>
-      <p class="subtitle">Tower Defense compétitif — invite tes amis ou joue en public</p>
+      <p class="subtitle">Competitive Tower Defense — play with friends or survive in solo</p>
     </header>
 
-    <div class="home-actions">
-      <button id="play-btn" class="btn primary">Jouer</button>
-      <button id="create-private-btn" class="btn secondary">Créer une partie privée</button>
-      <div class="join-row">
+    <section class="home-actions">
+      <button id="play-btn" class="btn primary">Play</button>
+      <button id="create-private-btn" class="btn secondary">Create private room</button>
+      <!-- <div class="join-row">
         <input id="private-code" placeholder="Code privé (ex: ABC12)" />
         <button id="join-private-btn" class="btn tertiary">Rejoindre</button>
-      </div>
-    </div>
+      </div> -->
+    </section>
 
-    <section class="leaderboard-panel">
-      <h3>Classement mondial</h3>
-      <div id="leaderboard" class="leaderboard"></div>
+    <section>
+      <div class="leaderboard-panel">
+        <h3>Leaderboard</h3>
+        <div id="leaderboard" class="leaderboard"></div>
+      </div>
+      <div class="leaderboard-panel">
+        <div id="personnal-leaderboard"></div>
+      </div>
     </section>
   </div>
 
   <!-- LOBBY -->
   <div id="lobby-screen" class="screen hidden">
-    <div class="lobby-left">
-      <div class="lobby-header">
-        <h2>Lobby</h2>
-        <div id="room-code-container" class="room-code hidden">
-          Code : <span id="room-code"></span>
-          <button id="copy-code-btn" class="btn mini">Copier</button>
+    <div class="lobby-header">
+      <h2>Lobby</h2>
+      <button id="copy-invite-btn" class="btn primary" style="display:none;">Invite</button>
+      <!-- <div id="room-code-container" class="room-code hidden">
+        Code : <span id="room-code"></span>
+        <button id="copy-code-btn" class="btn mini">Copier</button>
+      </div> -->
+    </div>
+
+    <section class="lobby-section">
+      <div class="lobby-left">
+        <div id="players-list" class="players-list"></div>
+
+        <div class="lobby-controls">
+          <button id="ready-btn" class="btn primary">Ready</button>
+          <button id="leave-btn" class="btn secondary">Leave</button>
+          <div id="countdown" class="countdown hidden">00</div>
         </div>
       </div>
 
-      <div id="players-list" class="players-list"></div>
-
-      <div class="lobby-controls">
-        <button id="ready-btn" class="btn primary">Ready</button>
-        <button id="leave-btn" class="btn secondary">Quitter</button>
-        <div id="countdown" class="countdown hidden">00</div>
-      </div>
-    </div>
-
-    <div class="lobby-right">
-      <div class="chat-panel">
-        <h4>Chat</h4>
-        <div id="chat-messages" class="chat-messages"></div>
-        <div class="chat-input-row">
-          <input id="chat-text" placeholder="Message..." />
-          <button id="chat-send-btn" class="btn mini">Envoyer</button>
+      <div class="lobby-right">
+        <div class="chat-panel">
+          <h4>Chat</h4>
+          <div id="chat-messages" class="chat-messages"></div>
+          <div class="chat-input-row">
+            <input id="chat-text" placeholder="Message..." />
+            <button id="chat-send-btn" class="btn">Envoyer</button>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 
-  <script type="module" src="/src2/index.ts"></script>
+  <script type="module" src="/src/index.ts"></script>
 </body>
 </html>

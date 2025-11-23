@@ -56,9 +56,9 @@ export class PublicLobby extends Room<LobbyState> {
     this.state = new LobbyState();
 
     // optional metadata (e.g. private code)
-    if (options?.code) {
-      this.setMetadata({ code: options.code });
-    }
+    // if (options?.code) {
+    //   this.setMetadata({ code: options.code });
+    // }
 
     // messages handlers
     this.onMessage("toggle_ready", (client: Client) => {
@@ -114,7 +114,7 @@ export class PublicLobby extends Room<LobbyState> {
     this.state.players.set(client.sessionId, player);
 
     // announce join
-    this.broadcast("sys", `${player.name} a rejoint le lobby.`);
+    // this.broadcast("sys", `${player.name} a rejoint le lobby.`);
 
     // if after join all ready -> possibly start countdown
     this._maybeStartCountdown();
@@ -124,7 +124,7 @@ export class PublicLobby extends Room<LobbyState> {
     const leaving = this.state.players.get(client.sessionId);
     if (leaving) {
       this.state.players.delete(client.sessionId);
-      this.broadcast("sys", `${leaving.name} a quitté le lobby.`);
+      // this.broadcast("sys", `${leaving.name} a quitté le lobby.`);
 
       // if host left, reassign host
       if (leaving.isHost) {
@@ -140,7 +140,7 @@ export class PublicLobby extends Room<LobbyState> {
         } else {
           // allow countdown to continue; clients are locked UI-side.
           // optionally announce
-          this.broadcast("sys", "Un joueur a quitté pendant les dernières secondes ; le lancement continue.");
+          // this.broadcast("sys", "Un joueur a quitté pendant les dernières secondes ; le lancement continue.");
         }
       }
     }
@@ -166,7 +166,7 @@ export class PublicLobby extends Room<LobbyState> {
       player.isHost = true;
       this.setMetadata({ hostSessionId: sessionId });
       this.broadcast("host_changed", player.name);
-      this.broadcast("sys", `${player.name} est le nouveau host.`);
+      // this.broadcast("sys", `${player.name} est le nouveau host.`);
     } else {
       // no players left
       this.setMetadata({ hostSessionId: null });

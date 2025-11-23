@@ -37,6 +37,8 @@
 
 
 import { Client, Room } from "colyseus.js";
+// import type { LobbyState } from "../../../server/src/rooms/schema/LobbyState";
+
 
 /**
  * NOTE: LobbyState is typed as any on the client to avoid cross-import issues.
@@ -53,13 +55,19 @@ export class NetworkService {
     return this.room;
   }
 
-  async createPrivateLobby(code?: string): Promise<AnyRoom> {
-    this.room = await this.client.create("private_lobby", { code });
+  async createPrivateLobby(): Promise<AnyRoom> {
+    this.room = await this.client.create("private_lobby");
     return this.room;
   }
 
-  async joinPrivateLobbyById(id: string): Promise<AnyRoom> {
-    this.room = await this.client.joinOrCreate("private_lobby", { id });
+  // async createPrivateLobby(code?: string): Promise<AnyRoom> {
+  //   this.room = await this.client.create("private_lobby", { code });
+  //   return this.room;
+  // }
+
+  async joinPrivateLobbyById(roomId: string): Promise<AnyRoom> {
+    // this.room = await this.client.joinOrCreate("private_lobby", { roomId });
+    this.room = await this.client.joinById(roomId);
     return this.room;
   }
 

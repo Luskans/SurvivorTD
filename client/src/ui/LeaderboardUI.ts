@@ -1,5 +1,6 @@
 export class LeaderboardUI {
   container = document.getElementById("leaderboard")!;
+  personnalContainer = document.getElementById("personnal-leaderboard")!;
 
   initSampleData() {
     // demo data (remplacer par fetch réel depuis le serveur)
@@ -7,7 +8,7 @@ export class LeaderboardUI {
       { rank: 1, name: "Aster", elo: 1620 },
       { rank: 2, name: "Blossom", elo: 1590 },
       { rank: 3, name: "Clover", elo: 1555 },
-      { rank: 4, name: "You", elo: 1500 }, // example line for current player
+      { rank: 4, name: "You", elo: 1500 },
       { rank: 5, name: "Dune", elo: 1420 },
       { rank: 6, name: "Echo", elo: 1390 },
     ];
@@ -21,6 +22,11 @@ export class LeaderboardUI {
       row.className = "leader-row" + (item.name === currentName ? " self" : "");
       row.innerHTML = `<div>#${item.rank} ${item.name}</div><div>${item.elo}</div>`;
       this.container.appendChild(row);
+
+      if (item.name === currentName) {
+        const personnalRow = row.cloneNode(true) as HTMLDivElement; 
+        this.personnalContainer.appendChild(personnalRow);
+      } 
     });
   }
 }
