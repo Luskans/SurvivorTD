@@ -97,7 +97,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Tower Brawl</title>
-  <link rel="stylesheet" href="/src/styles/styles.css">
+  <link rel="stylesheet" href="/src2/styles/styles.css">
 </head>
 <body>
 
@@ -132,7 +132,9 @@
   <div id="lobby-screen" class="screen hidden">
     <div class="lobby-header">
       <h2>Lobby</h2>
-      <button id="copy-invite-btn" class="btn primary" style="display:none;">Invite</button>
+      <div id="invite-container">
+        <button id="copy-invite-btn2" class="btn primary" style="display:none;">Invite</button>
+      </div>
       <!-- <div id="room-code-container" class="room-code hidden">
         Code : <span id="room-code"></span>
         <button id="copy-code-btn" class="btn mini">Copier</button>
@@ -163,6 +165,6 @@
     </section>
   </div>
 
-  <script type="module" src="/src/index.ts"></script>
+  <script type="module" src="/src2/index.ts"></script>
 </body>
 </html>
