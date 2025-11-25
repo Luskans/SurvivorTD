@@ -6,8 +6,6 @@ import { playground } from "@colyseus/playground";
  * Import your Room files
  */
 import { MyRoom } from "./rooms/MyRoom";
-import { PublicLobby } from "./rooms/PublicLobby";
-import { PrivateLobby } from "./rooms/PrivateLobby";
 import { Lobby } from "./rooms/Lobby";
 
 export default config({
@@ -17,8 +15,6 @@ export default config({
          * Define your room handlers:
          */
         gameServer.define('my_room', MyRoom);
-        gameServer.define('public_lobby', PublicLobby);
-        gameServer.define("private_lobby", PrivateLobby); // ou une variante privée si besoin
         gameServer.define('lobby', Lobby);
     },
 

@@ -1,8 +1,11 @@
+import type { LobbyState } from "../../../server/src/rooms/schema/LobbyState";
+import { Room } from "colyseus.js";
+
 export class ChatUI {
-  private room: any;
+  private room: Room<LobbyState>;
   private messagesEl: HTMLElement;
 
-  constructor(room: any) {
+  constructor(room: Room<LobbyState>) {
     this.room = room;
     this.messagesEl = document.getElementById("chat-messages")!;
     this.attach();
