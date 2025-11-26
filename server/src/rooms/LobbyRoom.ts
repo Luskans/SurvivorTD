@@ -1,8 +1,10 @@
 import { Room, Client } from "@colyseus/core";
-import { Player } from "./schema/Player";
+import { PlayerState } from "./schema/PlayerState";
 import { LobbyState } from "./schema/LobbyState";
+import { matchMaker } from "colyseus";
+import { ArraySchema } from "@colyseus/schema";
 
-export class Lobby extends Room<LobbyState> {
+export class LobbyRoom extends Room<LobbyState> {
   maxClients: number = 8;
   minClients: number = 2;
   countdownDefault: number = 8;
@@ -36,23 +38,59 @@ export class Lobby extends Room<LobbyState> {
       const from = (p && p.name) ? p.name : client.sessionId;
       this.broadcast("chat", { from, text: String(message) });
     });
+
+    this.onMessage("vote_kick", (client: Client, targetId: string) => {
+      const voters = this._getKickVotes(client.sessionId, targetId);
+      if (!voters) return;
+      
+      const totalPlayers = this.state.players.size;
+      const votes = voters.length;
+      const required = Math.floor(totalPlayers / 2) + 1;
+      
+      this.broadcast("sys", `${this.state.players.get(client.sessionId)?.name} voted to kick ${this.state.players.get(targetId)?.name} out. (${votes}/${required})`);
+      console.log(`[KickVote] ${votes}/${required} contre ${targetId}`);
+
+      if (votes >= required) {
+        this.broadcast("sys", `${this.state.players.get(targetId)?.name} has been kicked!`);
+        this.state.players.delete(targetId);
+        // const targetClient = this.clients.find(c => c.sessionId === targetId);
+        // if (targetClient) this.disconnect(parseInt(targetClient.sessionId, 10));
+      }
+    });
+    // this.onMessage("vote_kick", (client: Client, targetId: string) => {
+    //   const voters = this._getKickVotes(client.sessionId, targetId);
+    //   if (!voters) return;
+
+    //   const totalPlayers = this.state.players.size;
+    //   const votes = voters.length;
+    //   const required = Math.floor(totalPlayers / 2) + 1; // majorité
+
+    //   this.broadcast("sys", `${this.state.players.get(client.sessionId)?.name} voted to kick ${this.state.players.get(targetId)?.name} (${votes}/${required})`);
+    //   console.log(`[KickVote] ${votes}/${required} votes contre ${targetId}`);
+
+    //   if (votes >= required) {
+    //     this.broadcast("sys", `${this.state.players.get(targetId)?.name} has been kicked!`);
+    //     const targetClient = this.clients.find(c => c.sessionId === targetId);
+    //     if (targetClient) this.disconnect(parseInt(targetClient.sessionId, 10));
+    //   }
+    // });
   }
 
   onJoin(client: Client, options: any) {
-    console.log(`[Lobby ${this.roomId}] Client rejoint. Clients actuels: ${this.clients.length + 1}`);
+    console.log(`[Lobby ${this.roomId}] Client ${client.sessionId} rejoint. Clients actuels: ${this.clients.length}`);
     if (this.clients.length > this.maxClients) {
         throw new Error("The room is full.");
     }
 
-    if (this.countdownRemaining < this.countdownDefault) {
-        throw new Error("Too late, the game is about to start.");
-    }
+    // if (this.countdownRemaining < this.countdownDefault) {
+    //     throw new Error("Too late, the game is about to start.");
+    // }
 
     if (this.countdownInterval) { 
         this._stopCountdown("Countdown annulé — nouveau joueur a rejoint.");
     }
 
-    const player = new Player();
+    const player = new PlayerState();
     player.sessionId = client.sessionId;
     player.name = options?.name ?? `Player_${client.sessionId.substring(0,4)}`;
     player.elo = typeof options?.elo === "number" ? options.elo : 1500;
@@ -108,13 +146,17 @@ export class Lobby extends Room<LobbyState> {
 
   _startCountdown(seconds: number) {
     if (this.countdownInterval) return;
-    this.lock();
+    // this.lock();
     this.countdownRemaining = seconds;
     this.broadcast("countdown", this.countdownRemaining);
 
     this.countdownInterval = this.clock.setInterval(() => {
       this.countdownRemaining!--;
       this.broadcast("countdown", this.countdownRemaining);
+
+      if (this.countdownRemaining <= 3) {
+        this.lock();
+      }
 
       if (this.countdownRemaining <= 0) {
         this._launchGame();
@@ -124,17 +166,58 @@ export class Lobby extends Room<LobbyState> {
 
   _stopCountdown(reason: string) {
     if (this.countdownInterval) {
-      // this.clock.clearInterval(this.countdownInterval);
       this.countdownInterval.clear();
       this.countdownInterval = null;
     }
     this.unlock();
     this.countdownRemaining = this.countdownDefault;
+    this.broadcast("countdown_stop");
     console.log("Compte à rebourd arrêté : " + reason);
   }
 
-  _launchGame() {
+  async _launchGame() {
     this._stopCountdown("Lancement de la partie.");
     console.log("🚀 PARTIE LANCEE !");
+
+    const gameRoom = await matchMaker.createRoom("game", { 
+      players: Array.from(this.state.players.keys())
+    });
+
+    for (const client of this.clients) {
+      client.send("start_game", { roomId: gameRoom.roomId });
+    }
+
+    this.disconnect();
+    this._dispose();
+  }
+
+  // _getKickVotes(voter: string, target: string): string[] | null {
+  //   if (voter === target) return null;
+  //   if (!this.state.players.has(target)) return null;
+  //   if (!this.state.players.has(voter)) return null;
+
+  //   let voters: string[] = [];
+
+  //   const current = this.state.kicks.get(target);
+  //   if (current) voters = JSON.parse(current);
+
+  //   if (voters.includes(voter)) return null; // déjà voté
+
+  //   voters.push(voter);
+  //   this.state.kicks.set(target, JSON.stringify(voters));
+  //   return voters;
+  // }
+  _getKickVotes(voter: string, target: string): ArraySchema<string> | null {
+    if (voter === target) return null;
+    if (!this.state.players.has(target)) return null;
+    if (!this.state.players.has(voter)) return null;
+
+    let voters = this.state.kicks.get(target) || new ArraySchema<string>();
+
+    if (voters.includes(voter)) return null;
+
+    voters.push(voter);
+    this.state.kicks.set(target, voters);
+    return voters;
   }
 }

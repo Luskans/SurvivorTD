@@ -15,20 +15,25 @@
       <p class="subtitle">Competitive Tower Defense — play with friends or survive in solo</p>
     </header>
 
-    <section class="home-actions">
-      <button id="play-btn" class="btn primary">Play</button>
-      <button id="create-private-btn" class="btn secondary">Create private room</button>
-    </section>
+    <div class="home-body">
+      <div class="home-actions">
+        <!-- <div id="username-input-container">
+          <input type="text" id="username-input" placeholder="Enter your username" maxlength="16" />
+        </div> -->
+        <button id="play-btn" class="btn primary">Play</button>
+        <button id="create-private-btn" class="btn secondary">Create private room</button>
+      </div>
 
-    <section>
-      <div class="leaderboard-panel">
-        <h3>Leaderboard</h3>
-        <div id="leaderboard" class="leaderboard"></div>
+      <div class="home-leaderboard">
+        <div class="leaderboard-panel">
+          <h3>Leaderboard</h3>
+          <div id="leaderboard" class="leaderboard"></div>
+        </div>
+        <div class="leaderboard-panel">
+          <div id="personnal-leaderboard"></div>
+        </div>
       </div>
-      <div class="leaderboard-panel">
-        <div id="personnal-leaderboard"></div>
-      </div>
-    </section>
+    </div>
   </div>
 
   <!-- LOBBY -->
@@ -61,6 +66,10 @@
         </div>
       </div>
     </section>
+  </div>
+
+  <!-- GAME -->
+  <div id="game-screen" class="screen hidden">
   </div>
 
   <script type="module" src="/src/index.ts"></script>

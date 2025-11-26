@@ -20,12 +20,21 @@ export class NetworkService {
     return this.room;
   }
 
+  async joinGame(roomId: string): Promise<Room> {
+    this.room = await this.client.joinById(roomId);
+    return this.room
+  }
+
   toggleReady() {
     this.room?.send("toggle_ready");
   }
 
   sendChat(text: string) {
     this.room?.send("chat", text);
+  }
+
+  voteKick(targetId: string) {
+    this.room?.send("vote_kick", targetId);
   }
 
   leaveRoom() {

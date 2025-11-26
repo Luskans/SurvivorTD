@@ -38,6 +38,11 @@ body{
 #home-screen header{
   text-align:center;
 }
+#home-screen .home-body{
+  display:flex;
+  gap:18px;
+  flex:1;
+}
 h1{
   margin:0;
   font-size:40px;
@@ -56,6 +61,7 @@ h1{
   justify-content:center;
   margin-top:8px;
   flex-wrap:wrap;
+  flex:1;
 }
 .join-row{ display:flex; gap:8px; align-items:center; }
 input{ padding:10px 12px; border-radius:10px; border:1px solid #e3e8f0; outline:none; font-size:14px; }
@@ -74,14 +80,18 @@ input:focus{ box-shadow:0 0 0 4px rgba(106,160,255,0.12); }
 .btn:active{ transform: translateY(0); }
 
 .btn.primary{ background:var(--primary); color:white; box-shadow: 0 6px 18px rgba(106,160,255,0.12); }
-.btn.secondary{ background:var(--accent); color:white; }
+.btn.secondary{ background:var(--accent); color:white; box-shadow: 0 6px 18px rgba(106,160,255,0.12); }
 .btn.tertiary{ background:#fff; color:var(--text); border:1px solid #eee; }
+.btn.kick{ background:var(--danger); color:white; box-shadow: 0 6px 18px rgba(106,160,255,0.12); }
 .btn.mini{ padding:6px 10px; font-size:13px; border-radius:8px; }
 .btn.disabled{ background:var(--muted); color:white; box-shadow: 0 6px 18px rgba(106,160,255,0.12); cursor:default; }
 .btn.disabled:hover{ transform: none; }
 
 
 /* Leaderboard */
+.home-leaderboard{
+  flex:1;
+}
 .leaderboard-panel{
   margin-top:10px;
   background:var(--panel);

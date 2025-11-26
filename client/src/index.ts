@@ -3,6 +3,24 @@ import { LeaderboardUI } from "./ui/LeaderboardUI";
 import { LobbyUI } from "./ui/LobbyUI";
 import { network } from "./networking/NetworkService";
 import { ScreenManager } from "./ui/ScreenManager";
+import { GameScene } from "./ui/GameScene";
+import type { LobbyState } from "../../server/src/rooms/schema/LobbyState";
+
+// game config
+const config: Phaser.Types.Core.GameConfig = {
+    type: Phaser.AUTO,
+    width: 1280,
+    height: 720,
+    backgroundColor: '#b6d53c',
+    parent: 'game-screen',
+    physics: { default: "arcade" },
+    pixelArt: true,
+    scene: [ GameScene ],
+};
+ 
+// instantiate the game
+export const game = new Phaser.Game(config);
+// (window as any).game = game;
 
 document.addEventListener("DOMContentLoaded", async () => {
   const url = new URL(window.location.href);
@@ -15,7 +33,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
       console.log("Trying to join private room:", roomId);
       const room = await network.joinPrivateLobbyById(roomId);
-      new LobbyUI(room);
+      new LobbyUI(room!);
       ScreenManager.show("lobby-screen");
       joinedPrivateRoom = true;
 
