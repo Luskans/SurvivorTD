@@ -29,8 +29,6 @@ export class LobbyUI {
     try {
       if (this.locked) return;
       network.toggleReady();
-      console.log(`Le joueur ${this.room.sessionId} est prêt.`);
-
     } catch (e) {
       console.error(`Erreur du joueur ${this.room.sessionId} pour passer prêt.`, e);
       alert("Erreur passer prêt");
@@ -41,7 +39,6 @@ export class LobbyUI {
     try {
       if (this.locked) return;
       network.leaveRoom();
-      console.log(`Le joueur ${this.room.sessionId} a quitté le lobby.`);
       ScreenManager.show("home-screen");
 
     } catch (e) {
@@ -63,11 +60,22 @@ export class LobbyUI {
       // this.chat.systemMessage(`${p?.name ?? id} a quitté le lobby`);
       $(p).onChange(() => this.updatePlayersList());
       this.updatePlayersList();
+      if (this.room.sessionId === id) {
+        console.log("test du changelent ecran si kick2")
+        ScreenManager.show("home-screen");
+        alert("test ta été kick")
+      }
     });
 
     this.room.onMessage("countdown", (n: number) => this.onCountdown(n));
 
     this.room.onMessage("countdown_stop", () => this.onCountdown_stop());
+
+    this.room.onMessage("kicked", (msg: string) => {
+      alert(msg || "You were kicked from this lobby.");
+      network.leaveRoom();
+      ScreenManager.show("home-screen");
+    });
 
     this.room.onMessage("start_game", async (data) => {
       console.log("Switch to game!", data);
@@ -122,30 +130,13 @@ export class LobbyUI {
       kickBtn.textContent = "Kick";
       kickBtn.classList.add("btn", "mini", "kick");
 
-      // console.log("kick : room session id : ", this.room.sessionId)
-      // console.log("kick : room kicks : ", this.room.state.kicks)
-      // console.log("kick : room kick get id : ", this.room.state.kicks.get(id))
-      // console.log("kick : room kick values : ", Array.from(this.room.state.kicks.values()))
-      // console.log("kick : room kick value id : ", Array.from(this.room.state.kicks.values()).includes(id))
-
-      console.log("kick : l'id : ", id)
-      console.log("kick : key : ", this.room.state.kicks.keys())
-      if (this.room.state.kicks.has(id) && this.room.state.kicks.get(id)?.includes(id))  {
-        console.log("dans ma condition zarbi")
+      if (this.room.state.kicks.has(id) && this.room.state.kicks.get(id)?.includes(this.room.sessionId))  {
         kickBtn.disabled = true;
         kickBtn.classList.add("disabled");
       }
-      // const voters = this.room.state.kicks.get(id) || [];
-      // if (voters.includes(this.room.sessionId)) {
-      //   kickBtn.disabled = true;
-      //   kickBtn.classList.add("disabled");
-      // }
 
       kickBtn.onclick = () => {
         network.voteKick(id);
-        // kickBtn.disabled = true;
-        // kickBtn.classList.add("disabled");
-        // this.updateKickButton();
       };
       right.appendChild(kickBtn);
     }

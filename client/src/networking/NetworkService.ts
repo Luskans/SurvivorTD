@@ -11,7 +11,7 @@ export class NetworkService {
   }
 
   async createPrivateLobby(isPrivate: boolean): Promise<Room> {
-    this.room = await this.client.create("lobby", { isPrivate: true });
+    this.room = await this.client.create("lobby", { isPrivate: isPrivate });
     return this.room;
   }
 

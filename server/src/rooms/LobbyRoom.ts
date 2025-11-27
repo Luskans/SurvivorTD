@@ -51,29 +51,22 @@ export class LobbyRoom extends Room<LobbyState> {
       console.log(`[KickVote] ${votes}/${required} contre ${targetId}`);
 
       if (votes >= required) {
+        const targetClient = this.clients.find(c => c.sessionId === targetId);
         this.broadcast("sys", `${this.state.players.get(targetId)?.name} has been kicked!`);
         this.state.players.delete(targetId);
-        // const targetClient = this.clients.find(c => c.sessionId === targetId);
-        // if (targetClient) this.disconnect(parseInt(targetClient.sessionId, 10));
+        targetClient.send("kicked", "You have been kicked from the room!");
+
+        if (this.state.hostId === targetId) {
+          const firstSessionId = this.state.players.keys().next().value;
+
+          if (firstSessionId) {
+              this.state.hostId = firstSessionId; 
+              const newHost = this.state.players.get(firstSessionId);
+              this.broadcast("sys", `${newHost.name} is the new room owner.`);
+          }
+        }
       }
     });
-    // this.onMessage("vote_kick", (client: Client, targetId: string) => {
-    //   const voters = this._getKickVotes(client.sessionId, targetId);
-    //   if (!voters) return;
-
-    //   const totalPlayers = this.state.players.size;
-    //   const votes = voters.length;
-    //   const required = Math.floor(totalPlayers / 2) + 1; // majorité
-
-    //   this.broadcast("sys", `${this.state.players.get(client.sessionId)?.name} voted to kick ${this.state.players.get(targetId)?.name} (${votes}/${required})`);
-    //   console.log(`[KickVote] ${votes}/${required} votes contre ${targetId}`);
-
-    //   if (votes >= required) {
-    //     this.broadcast("sys", `${this.state.players.get(targetId)?.name} has been kicked!`);
-    //     const targetClient = this.clients.find(c => c.sessionId === targetId);
-    //     if (targetClient) this.disconnect(parseInt(targetClient.sessionId, 10));
-    //   }
-    // });
   }
 
   onJoin(client: Client, options: any) {
@@ -81,10 +74,6 @@ export class LobbyRoom extends Room<LobbyState> {
     if (this.clients.length > this.maxClients) {
         throw new Error("The room is full.");
     }
-
-    // if (this.countdownRemaining < this.countdownDefault) {
-    //     throw new Error("Too late, the game is about to start.");
-    // }
 
     if (this.countdownInterval) { 
         this._stopCountdown("Countdown annulé — nouveau joueur a rejoint.");
@@ -116,17 +105,9 @@ export class LobbyRoom extends Room<LobbyState> {
         if (firstSessionId) {
             this.state.hostId = firstSessionId; 
             const newHost = this.state.players.get(firstSessionId);
-            // this.broadcast("host_changed", newHost.name);
             this.broadcast("sys", `${newHost.name} is the new room owner.`);
         }
       }
-
-      // les autres joueurs seront ready dans tous les cas
-      // if (this.countdownRemaining > 3) {
-      //   this._stopCountdown("Countdown annulé — un joueur a quitté.");
-      // }
-
-      // this._checkStartGame();
     }
   }
 
@@ -191,33 +172,19 @@ export class LobbyRoom extends Room<LobbyState> {
     this._dispose();
   }
 
-  // _getKickVotes(voter: string, target: string): string[] | null {
-  //   if (voter === target) return null;
-  //   if (!this.state.players.has(target)) return null;
-  //   if (!this.state.players.has(voter)) return null;
-
-  //   let voters: string[] = [];
-
-  //   const current = this.state.kicks.get(target);
-  //   if (current) voters = JSON.parse(current);
-
-  //   if (voters.includes(voter)) return null; // déjà voté
-
-  //   voters.push(voter);
-  //   this.state.kicks.set(target, JSON.stringify(voters));
-  //   return voters;
-  // }
-  _getKickVotes(voter: string, target: string): ArraySchema<string> | null {
+  _getKickVotes(voter: string, target: string): string[] | null {
     if (voter === target) return null;
     if (!this.state.players.has(target)) return null;
     if (!this.state.players.has(voter)) return null;
 
-    let voters = this.state.kicks.get(target) || new ArraySchema<string>();
+    let voters: string[] = [];
+    const currentVoters = this.state.kicks.get(target);
+    if (currentVoters) voters = JSON.parse(currentVoters);
 
-    if (voters.includes(voter)) return null;
+    if (voters.includes(voter)) return null; // déjà voté
 
     voters.push(voter);
-    this.state.kicks.set(target, voters);
+    this.state.kicks.set(target, JSON.stringify(voters));
     return voters;
   }
 }
