@@ -5,18 +5,18 @@ export class NetworkService {
   client = new Client("ws://localhost:2567");
   room: Room<LobbyState> | null = null;
 
-  async joinPublicLobby(): Promise<Room> {
-    this.room = await this.client.joinOrCreate("lobby");
+  async joinPublicLobby(options?: { uid: string, username: string, isPrivate: boolean }): Promise<Room> {
+    this.room = await this.client.joinOrCreate("lobby", options);
     return this.room;
   }
 
-  async createPrivateLobby(isPrivate: boolean): Promise<Room> {
-    this.room = await this.client.create("lobby", { isPrivate: isPrivate });
+  async createPrivateLobby(options?: { uid: string, username: string, isPrivate: boolean }): Promise<Room> {
+    this.room = await this.client.create("lobby", options);
     return this.room;
   }
 
-  async joinPrivateLobbyById(roomId: string): Promise<Room> {
-    this.room = await this.client.joinById(roomId);
+  async joinPrivateLobbyById(roomId: string, options?: { uid: string, username: string }): Promise<Room> {
+    this.room = await this.client.joinById(roomId, options);
     return this.room;
   }
 

@@ -2,7 +2,8 @@ import { Schema, type } from "@colyseus/schema";
 
 export class PlayerState extends Schema {
   @type("string") sessionId!: string;
-  @type("string") name: string = "Player";
+  @type("string") uid: string;
+  @type("string") username: string;
   @type("number") elo: number = 1200;
   @type("boolean") isReady: boolean = false;
 }

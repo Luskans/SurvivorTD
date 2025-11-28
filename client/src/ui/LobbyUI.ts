@@ -105,12 +105,13 @@ export class LobbyUI {
   }
 
   createPlayerRow(p: PlayerState, id: string) {
+    console.log("player state : ", p)
     const div = document.createElement("div");
     div.className = "player-entry";
     if (this.room.sessionId === p.sessionId) div.classList.add("host");
 
     const left = document.createElement("div");
-    left.innerHTML = `<div style="font-weight:700">${id === this.room.state.hostId ? "👑" : ""}${this.escape(p.name ?? id)}</div>
+    left.innerHTML = `<div style="font-weight:700">${id === this.room.state.hostId ? "👑" : ""}${this.escape(p.username ?? "Guest")}</div>
                       <div class="meta">ELO: ${Number(p.elo ?? 1200)}</div>`;
 
     const right = document.createElement("div");

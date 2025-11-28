@@ -35,7 +35,7 @@ export class LobbyRoom extends Room<LobbyState> {
 
     this.onMessage("chat", (client: Client, message: string) => {
       const p = this.state.players.get(client.sessionId);
-      const from = (p && p.name) ? p.name : client.sessionId;
+      const from = (p && p.username) ? p.username : client.sessionId;
       this.broadcast("chat", { from, text: String(message) });
     });
 
@@ -47,12 +47,13 @@ export class LobbyRoom extends Room<LobbyState> {
       const votes = voters.length;
       const required = Math.floor(totalPlayers / 2) + 1;
       
-      this.broadcast("sys", `${this.state.players.get(client.sessionId)?.name} voted to kick ${this.state.players.get(targetId)?.name} out. (${votes}/${required})`);
+      this.broadcast("sys", `${this.state.players.get(client.sessionId)?.username} voted to kick ${this.state.players.get(targetId)?.username} out. (${votes}/${required})`);
       console.log(`[KickVote] ${votes}/${required} contre ${targetId}`);
 
       if (votes >= required) {
         const targetClient = this.clients.find(c => c.sessionId === targetId);
-        this.broadcast("sys", `${this.state.players.get(targetId)?.name} has been kicked!`);
+        this.broadcast("sys", `${this.state.players.get(targetId)?.username} has been kicked!`);
+        this.state.bannedUids.set(this.state.players.get(targetId).uid, true);
         this.state.players.delete(targetId);
         targetClient.send("kicked", "You have been kicked from the room!");
 
@@ -62,7 +63,7 @@ export class LobbyRoom extends Room<LobbyState> {
           if (firstSessionId) {
               this.state.hostId = firstSessionId; 
               const newHost = this.state.players.get(firstSessionId);
-              this.broadcast("sys", `${newHost.name} is the new room owner.`);
+              this.broadcast("sys", `${newHost.username} is the new room owner.`);
           }
         }
       }
@@ -79,9 +80,17 @@ export class LobbyRoom extends Room<LobbyState> {
         this._stopCountdown("Countdown annulé — nouveau joueur a rejoint.");
     }
 
+    const uid = options?.uid;
+    if (uid && this.state.bannedUids.has(uid)) {
+        console.warn(`Tentative de reconnexion bloquée pour l'UID: ${uid}. Il est banni.`);
+        throw new Error("Banned from this room."); 
+    }
+
     const player = new PlayerState();
     player.sessionId = client.sessionId;
-    player.name = options?.name ?? `Player_${client.sessionId.substring(0,4)}`;
+    player.uid = options?.uid;
+    player.username = options?.username;
+    // player.username = options?.username ?? `Player_${client.sessionId.substring(0,4)}`;
     player.elo = typeof options?.elo === "number" ? options.elo : 1500;
     player.isReady = false;
 
@@ -90,14 +99,14 @@ export class LobbyRoom extends Room<LobbyState> {
     }
 
     this.state.players.set(client.sessionId, player);
-    this.broadcast("sys", `${player.name} has joined the room.`);
+    this.broadcast("sys", `${player.username} has joined the room.`);
   }
 
   onLeave(client: Client, consented: boolean) {
     const player = this.state.players.get(client.sessionId);
     if (player) {
       this.state.players.delete(client.sessionId);
-      this.broadcast("sys", `${player.name} has left the room.`);
+      this.broadcast("sys", `${player.username} has left the room.`);
 
       if (this.state.hostId === player.sessionId) {
         const firstSessionId = this.state.players.keys().next().value;
@@ -105,7 +114,7 @@ export class LobbyRoom extends Room<LobbyState> {
         if (firstSessionId) {
             this.state.hostId = firstSessionId; 
             const newHost = this.state.players.get(firstSessionId);
-            this.broadcast("sys", `${newHost.name} is the new room owner.`);
+            this.broadcast("sys", `${newHost.username} is the new room owner.`);
         }
       }
     }
@@ -181,7 +190,7 @@ export class LobbyRoom extends Room<LobbyState> {
     const currentVoters = this.state.kicks.get(target);
     if (currentVoters) voters = JSON.parse(currentVoters);
 
-    if (voters.includes(voter)) return null; // déjà voté
+    if (voters.includes(voter)) return null;
 
     voters.push(voter);
     this.state.kicks.set(target, JSON.stringify(voters));

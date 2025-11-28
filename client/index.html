@@ -17,11 +17,15 @@
 
     <div class="home-body">
       <div class="home-actions">
-        <!-- <div id="username-input-container">
-          <input type="text" id="username-input" placeholder="Enter your username" maxlength="16" />
-        </div> -->
-        <button id="play-btn" class="btn primary">Play</button>
-        <button id="create-private-btn" class="btn secondary">Create private room</button>
+        <div class="home-actions-inside">
+          <div id="username-input-container">
+            <input type="text" id="username-input" placeholder="Enter your username" minlength="2" maxlength="20" required />
+            <p id="username-input-infos">2-20 characters, letters and numbers only</p>
+          </div>
+          <p id="username-welcome-container" class="hidden"></p>
+          <button id="play-btn" class="btn primary">Play</button>
+          <button id="create-private-btn" class="btn secondary">Create private room</button>
+        </div>
       </div>
 
       <div class="home-leaderboard">
