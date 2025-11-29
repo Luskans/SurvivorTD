@@ -25,19 +25,6 @@ export class HomeUI {
     }
   }
 
-  // async handlePlayBtn() {
-  //   try {
-  //     const room = await network.joinPublicLobby();
-  //     console.log("Connection au lobby public réussie :", room.roomId);
-  //     new LobbyUI(room);
-  //     ScreenManager.show("lobby-screen");
-
-  //   } catch (e) {
-  //     console.error("Error join public:", e);
-  //     alert("Impossible de rejoindre le lobby public.");
-  //   }
-  // }
-
   async handlePlayBtn() {
     const pathName = window.location.pathname;
     const roomId = pathName.substring(1);
@@ -45,9 +32,12 @@ export class HomeUI {
     const uid = await getOrCreateUID();
 
     if (!username) {
-      await validateName();
-      return;
+      const valid = await validateName();
+      if (!valid) return;
+
+      username = await getUsername();
     }
+    this.setupUsername();
 
     try {
       let room;

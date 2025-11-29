@@ -105,7 +105,6 @@ export class LobbyUI {
   }
 
   createPlayerRow(p: PlayerState, id: string) {
-    console.log("player state : ", p)
     const div = document.createElement("div");
     div.className = "player-entry";
     if (this.room.sessionId === p.sessionId) div.classList.add("host");
@@ -131,7 +130,7 @@ export class LobbyUI {
       kickBtn.textContent = "Kick";
       kickBtn.classList.add("btn", "mini", "kick");
 
-      if (this.room.state.kicks.has(id) && this.room.state.kicks.get(id)?.includes(this.room.sessionId))  {
+      if (this.room.state.kicks.has(id) && this.room.state.kicks.get(id)?.includes(this.room.sessionId)) {
         kickBtn.disabled = true;
         kickBtn.classList.add("disabled");
       }
@@ -155,7 +154,8 @@ export class LobbyUI {
       btn.textContent = "Invite";
       div.appendChild(btn);
       btn.onclick = () => {
-        const inviteURL = `${window.location.origin}/private/${this.room.roomId}`;
+        // const inviteURL = `${window.location.origin}/private/${this.room.roomId}`;
+        const inviteURL = `${window.location.origin}/${this.room.roomId}`;
         navigator.clipboard.writeText(inviteURL)
           .then(() => this.chat.systemMessage(`Room link copied to clipboard.`))
           .catch(() => alert("Impossible de copier le lien"));

@@ -17,13 +17,15 @@ export function createUsername(username : string): void {
   localStorage.setItem("player_username", newUsername);
 }
 
-export function validateName(): void {
-  const nameInput = document.getElementById("username-input") as HTMLInputElement;
-  const regex = /^[\p{L}0-9]{2,20}$/u;
+export function validateName(): boolean {
+    const nameInput = document.getElementById("username-input") as HTMLInputElement;
+    const regex = /^[\p{L}0-9]{2,20}$/u;
 
-  if (!regex.test(nameInput.value)) {
-      alert("Invalid username");
-  }
+    if (!regex.test(nameInput.value)) {
+        alert("Invalid username");
+        return false;
+    }
 
-  createUsername(nameInput.value);
+    createUsername(nameInput.value);
+    return true;
 }
