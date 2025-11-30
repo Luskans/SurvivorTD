@@ -1,30 +1,4 @@
-<!-- <script lang="ts">
-  export let p: any;
-  export let id: string;
-  export let room: any;
-  import { network } from "../services/network";
-
-  function kick() {
-    network.voteKick(id);
-  }
-</script>
-
-<div class="player-entry">
-  <div>
-    {#if id === room.state.hostId}👑{/if}
-    {p.username ?? "Guest"}
-    <div class="meta">ELO: {p.elo ?? 1200}</div>
-  </div>
-  <div class="right">
-    <div>{p.isReady ? "✔ READY" : "⏳"}</div>
-    {#if id !== room.sessionId}
-      <button class="btn mini kick" on:click={kick}>Kick</button>
-    {/if}
-  </div>
-</div> -->
-
 <script lang="ts">
-  // Assurez-vous d'avoir vos types Colyseus pour une meilleure sécurité
   type PlayerState = any; // Remplacez par le type réel
 
   export let p: PlayerState;
@@ -34,8 +8,6 @@
 
   import { network } from "../services/network";
 
-  // Pour la gestion de l'état du bouton Kick
-  // Le MapSchema 'kicks' dans LobbyState devrait être accessible via room.state.kicks
   $: isKickVoted = room.state.kicks.has(id) && room.state.kicks.get(id)?.includes(room.sessionId);
   $: isDisabled = isKickVoted || isLocked;
 

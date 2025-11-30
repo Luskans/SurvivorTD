@@ -58,7 +58,7 @@
         {#if m.type === "sys"}
           {m.text}
         {:else}
-          {m.from}: {m.text}
+          {m.from} : {m.text}
         {/if}
       </div>
     {/each}

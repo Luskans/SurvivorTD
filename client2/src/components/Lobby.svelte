@@ -5,6 +5,7 @@
   import Chat from "./Chat.svelte";
   import PlayerRow from "./PlayerRow.svelte";
   import { getStateCallbacks } from "colyseus.js";
+  import { toast } from '@zerodevx/svelte-toast'
   import { GameScene } from "../game/GameScene"; // Importez l'instance de jeu Phaser
 
   type LobbyState = any;
@@ -61,7 +62,7 @@
           chatComponent.appendSys(`Room link copied to clipboard.`);
         }
       })
-      .catch(() => alert("Error to copy the link"));
+      .catch(() => toast.push("Error to copy the invite link.", { classes: ['custom'] }));
   }
 
   function onCountdown(sec: number) {
@@ -103,7 +104,8 @@
 
     listeners.push(
       room.onMessage("kicked", (msg: string) => {
-        alert(msg || "You were kicked from this lobby.");
+        // alert(msg || "You were kicked from this lobby.");
+        toast.push("You were kicked from this lobby.", { classes: ['custom'] })
         network.leaveRoom();
         screen.set("home");
       }),
@@ -158,9 +160,9 @@
         <button class="btn primary" on:click={toggleReady} disabled={isLocked}>
           {readyButtonText}
         </button>
-        <button class="btn secondary" on:click={leave} disabled={isLocked}
-          >Leave</button
-        >
+        <button class="btn secondary" on:click={leave} disabled={isLocked}>
+          Leave
+        </button>
 
         {#if countdown}
           <div class="countdown">START {countdown}</div>

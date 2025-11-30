@@ -21,5 +21,6 @@
   {:else}
     <Game />
   {/if}
+  <!-- <SvelteToast options={{ intro: { y: -32 } }} /> -->
   <SvelteToast />
 </main>

@@ -72,9 +72,9 @@ export class LobbyRoom extends Room<LobbyState> {
 
   onJoin(client: Client, options: any) {
     console.log(`[Lobby ${this.roomId}] Client ${client.sessionId} rejoint. Clients actuels: ${this.clients.length}`);
-    if (this.clients.length > this.maxClients) {
-        throw new Error("The room is full.");
-    }
+    // if (this.clients.length > this.maxClients) {
+    //     throw new Error("The room is full.");
+    // }
 
     if (this.countdownInterval) { 
         this._stopCountdown("Countdown annulé — nouveau joueur a rejoint.");

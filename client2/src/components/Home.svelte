@@ -17,8 +17,8 @@
 
     if (!username) {
       if (!setUsername(usernameInput)) {
-        alert('Invalid username');
-        // toast.push('Hello world!')}
+        // alert('Invalid username');
+        toast.push('Invalid username.', { classes: ['custom'] })
         return;
       }
       username = getUsername();
@@ -36,9 +36,11 @@
       currentRoom.set(room);
       screen.set('lobby');
 
-    } catch (e) {
+    } catch (e: any) {
       console.error("Error join public:", e);
-      alert("Impossible de rejoindre le lobby public.");
+      const errorMessage = (e.code = 4212) ? "The lobby is full." : (e.message || "Error to join the lobby.");
+      // toast.push("Error to join a public lobby.", { classes: ['custom'] })
+      toast.push({ msg: errorMessage, classes: ['custom'] });
     }
   }
 
@@ -48,7 +50,8 @@
 
     if (!username) {
       if (!setUsername(usernameInput)) {
-        alert('Invalid username');
+        // alert('Invalid username');
+        toast.push('Invalid username.', { classes: ['custom'] })
         return;
       }
       username = getUsername();
@@ -62,7 +65,7 @@
 
     } catch (e) {
       console.error("Error create private:", e);
-      alert("Impossible de créer un lobby privé.");
+      toast.push("Error to create a private lobby.", { classes: ['custom'] })
     }
   }
 </script>
