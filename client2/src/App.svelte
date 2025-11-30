@@ -1,0 +1,25 @@
+<script lang="ts">
+  import { onMount } from 'svelte';
+  import { screen } from './stores/ui';
+  import Home from './components/Home.svelte';
+  import Lobby from './components/Lobby.svelte';
+  import Game from './components/Game.svelte';
+  import { getOrCreateUID } from './services/player';
+  import { SvelteToast } from '@zerodevx/svelte-toast'
+
+  onMount(() => {
+    getOrCreateUID();
+  });
+</script>
+
+
+<main>
+  {#if $screen === 'home'}
+    <Home />
+  {:else if $screen === 'lobby'}
+    <Lobby />
+  {:else}
+    <Game />
+  {/if}
+  <SvelteToast />
+</main>

@@ -65,13 +65,13 @@ h1{
   flex:1;
 }
 .home-actions-inside{
-  display: flex;
+  display:flex;
   flex-direction: column;
-  gap: 12px;
-  align-items: center;
-  justify-content: center;
-  margin-top: 8px;
-  flex-wrap: wrap;
+  gap:12px;
+  align-items:center;
+  justify-content:center;
+  margin-top:8px;
+  flex-wrap:wrap;
   width: 300px;
 }
 .join-row{ display:flex; gap:8px; align-items:center; }
