@@ -6,7 +6,7 @@
   import PlayerRow from "./PlayerRow.svelte";
   import { getStateCallbacks } from "colyseus.js";
   import { toast } from '@zerodevx/svelte-toast'
-  import { GameScene } from "../game/GameScene"; // Importez l'instance de jeu Phaser
+  import { GameScene } from "../game/scenes/GameScene"; // Importez l'instance de jeu Phaser
 
   type LobbyState = any;
   type PlayerState = any;
@@ -22,15 +22,6 @@
   $: readyButtonText = myPlayer?.isReady ? "Not Ready" : "Ready";
 
   $: isHostAndPrivate = room && room.state.isPrivate && room.sessionId === room.state.hostId;
-
-  $: console.log(
-    'Invite Button Check:', 
-    'Room:', !!room, 
-    'Private:', room?.state?.isPrivate, 
-    'Host ID:', room?.state?.hostId, 
-    'My ID:', room?.sessionId,
-    'isHostAndPrivate:', isHostAndPrivate
-  );
 
   // --- Fonctions de Contrôle ---
 
@@ -113,9 +104,11 @@
 
     listeners.push(
       room.onMessage("start_game", async (data: { roomId: string }) => {
-        console.log("Switch to game!", data);
-        const gameRoom = await network.joinGame(data.roomId);
+        console.log("Switch to loading scene !", data);
+        // const gameRoom = await network.joinGame(data.roomId);
         screen.set("game");
+        phaserGame.scene.start("LoadingScene", { roomId });
+
         // GameScene.scene.start("GameScene", { room: gameRoom }); // Démarrage de Phaser
       }),
     );

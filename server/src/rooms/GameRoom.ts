@@ -10,6 +10,13 @@ export class GameRoom extends Room<GameState> {
   onCreate(options: any) {
     this.state = new GameState();
 
+    this.onMessage("loaded", (client: Client) => {
+      const player = this.state.players.get(client.sessionId);
+      if (!player) return;
+
+      player.hasLoaded = true;
+    });
+
     const players: string[] = options?.players ?? [];
     players.forEach(sessionId => {
       const tower = new TowerState();

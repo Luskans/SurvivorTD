@@ -1,7 +1,8 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
   import Phaser from "phaser";
-  import { GameScene } from "../game/GameScene";
+  import { GameScene } from "../game/scenes/GameScene";
+  import { LoadingScene } from "../game/scenes/LoadingScene";
   import { currentRoom } from "../stores/ui";
 
   let container: HTMLDivElement;
@@ -12,9 +13,11 @@
       type: Phaser.AUTO,
       width: 1280,
       height: 720,
+      backgroundColor: '#b6d53c',
       parent: container,
       physics: { default: "arcade" },
-      scene: [GameScene],
+      pixelArt: true,
+      scene: [LoadingScene, GameScene],
     };
     phaserGame = new Phaser.Game(config);
     window.__PHASER_GAME__ = phaserGame;

@@ -7,8 +7,8 @@ import { ArraySchema } from "@colyseus/schema";
 export class LobbyRoom extends Room<LobbyState> {
   maxClients: number = 8;
   minClients: number = 2;
-  countdownDefault: number = 8;
-  countdownRemaining: number = 8;
+  countdownDefault: number = 4;
+  countdownRemaining: number = 4;
   countdownInterval: any;
 
   onCreate(options: any) {
