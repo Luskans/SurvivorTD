@@ -3,22 +3,23 @@
   import { currentRoom, screen } from "../stores/ui";
   import { network } from "../services/network";
   import Chat from "./Chat.svelte";
-  import PlayerRow from "./PlayerRow.svelte";
+  import CustomerRow from "./CustomerRow.svelte";
   import { getStateCallbacks } from "colyseus.js";
-  import { toast } from '@zerodevx/svelte-toast'
-  import { GameScene } from "../game/scenes/GameScene"; // Importez l'instance de jeu Phaser
+  import { toast } from '@zerodevx/svelte-toast';
+  import { createGame, getGame } from "../game/phaser";
+
 
   type LobbyState = any;
-  type PlayerState = any;
+  type CustomerState = any;
 
   $: room = $currentRoom;
 
-  let playersEntries: [string, PlayerState][] = [];
+  let customersEntries: [string, CustomerState][] = [];
   let isLocked: boolean = false;
   let countdown: number | null = null;
   let chatComponent: any;
 
-  $: myPlayer = playersEntries.find(([id, p]) => id === room?.sessionId)?.[1];
+  $: myPlayer = customersEntries.find(([id, p]) => id === room?.sessionId)?.[1];
   $: readyButtonText = myPlayer?.isReady ? "Not Ready" : "Ready";
 
   $: isHostAndPrivate = room && room.state.isPrivate && room.sessionId === room.state.hostId;
@@ -37,9 +38,9 @@
 
   // --- Logique d'État Colyseus (listenStates) ---
 
-  function updatePlayersList() {
-    if (room?.state?.players) {
-      playersEntries = Array.from(room.state.players.entries());
+  function updateCustomersList() {
+    if (room?.state?.customers) {
+      customersEntries = Array.from(room.state.customers.entries());
     }
   }
 
@@ -73,15 +74,15 @@
     let listeners: Function[] = [];
 
     listeners.push(
-      stateCallback(room.state.players).onAdd((p: PlayerState, id: string) => {
-        stateCallback(p).onChange(() => updatePlayersList());
-        updatePlayersList();
+      stateCallback(room.state.customers).onAdd((p: CustomerState, id: string) => {
+        stateCallback(p).onChange(() => updateCustomersList());
+        updateCustomersList();
       }),
     );
 
     listeners.push(
-      stateCallback(room.state.players).onRemove((p: PlayerState, id: string) => {
-        updatePlayersList();
+      stateCallback(room.state.customers).onRemove((p: CustomerState, id: string) => {
+        updateCustomersList();
         if (room?.sessionId === id) {
           console.log("Déconnexion ou kick détecté.");
           leave();
@@ -102,23 +103,56 @@
       }),
     );
 
-    listeners.push(
-      room.onMessage("start_game", async (data: { roomId: string }) => {
-        console.log("Switch to loading scene !", data);
-        // const gameRoom = await network.joinGame(data.roomId);
-        screen.set("game");
-        phaserGame.scene.start("LoadingScene", { roomId });
+    // listeners.push(
+    //   room.onMessage("start_game", async ({ roomId }: any) => {
+    //     screen.set("game");
 
-        // GameScene.scene.start("GameScene", { room: gameRoom }); // Démarrage de Phaser
+    //     await new Promise(resolve => setTimeout(resolve, 50));
+    //     const game = getGame();
+    //     if (!game) return;
+
+    //     game.scene.stop("BootScene");
+    //     game.scene.start("LoadingScene", { roomId });
+        
+    //     network.leaveRoom();
+    //   }),
+    // );
+    // listeners.push(
+    //   room.onMessage("start_game", async ({ roomId }: any) => {
+    //     const gameRoom = await network.joinGame(roomId, { uid: myPlayer.uid, username: myPlayer.username, elo: myPlayer.elo });
+    //     if (!gameRoom) return;
+
+    //     await createGame();
+    //     const game = getGame();
+    //     if (!game) return;
+        
+    //     game.scene.start("LoadingScene", { gameRoom });
+    //     screen.set("game");
+    //     network.leaveRoom();
+    //   }),
+    // );
+    listeners.push(
+      room.onMessage("start_game", async ({ roomId }: any) => {
+        network.leaveRoom();
+
+        await createGame();
+        const game = getGame();
+        if (!game) return;
+        
+        game.scene.start("LoadingScene", { 
+            roomId, 
+            options: { uid: myPlayer.uid, username: myPlayer.username, elo: myPlayer.elo } 
+        });
+        screen.set("game");
       }),
     );
 
     listeners.push(room.onStateChange(() => {
       room = room;
-      updatePlayersList();
+      updateCustomersList();
     }));
 
-    updatePlayersList();
+    updateCustomersList();
 
     // return () => {
     //   listeners.forEach((unsubscribe) => unsubscribe());
@@ -140,9 +174,9 @@
   <div class="lobby-content">
     <div class="lobby-left">
       <div class="players-list">
-        {#if playersEntries.length > 0} 
-          {#each playersEntries as [id, p] (id)}
-            <PlayerRow p={p} id={id} room={room} isLocked={isLocked} />
+        {#if customersEntries.length > 0} 
+          {#each customersEntries as [id, c] (id)}
+            <CustomerRow c={c} id={id} room={room} isLocked={isLocked} />
           {/each}
         {:else}
           <p>Waiting for players...</p> 

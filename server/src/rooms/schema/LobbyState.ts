@@ -1,8 +1,8 @@
 import { Schema, MapSchema, type, ArraySchema } from "@colyseus/schema";
-import { PlayerState } from "./PlayerState";
+import { CustomerState } from "./CustomerState";
 
 export class LobbyState extends Schema {
-  @type({ map: PlayerState }) players = new MapSchema<PlayerState>();
+  @type({ map: CustomerState }) customers = new MapSchema<CustomerState>();
   @type("boolean") isPrivate: boolean = false;
   @type("string") hostId: string;
   @type({ map: "string" }) kicks = new MapSchema<string>();

@@ -2,45 +2,52 @@ import { Room, Client } from "colyseus";
 import { GameState } from "./schema/GameState";
 import { TowerState } from "./schema/TowerState";
 import { EnemyState } from "./schema/EnemyState";
+import { PlayerState } from "./schema/PlayerState";
 
 export class GameRoom extends Room<GameState> {
 
-  waveIntervalMs = 30000; // 30s
-
   onCreate(options: any) {
+    console.log(`🚀 Dans la game room ${this.roomId}, les joueurs devraient se co à ca !`);
     this.state = new GameState();
+
+    // const customers: { sessionId: string, uid: string, username: string, elo: number }[] = options?.customers ?? [];
+    // console.log("dans game room server, customers : ", customers)
+    // customers.forEach(c => {
+    //   const player = new PlayerState();
+    //   player.sessionId = c.sessionId;
+    //   player.uid = c.uid;
+    //   player.username = c.username;
+    //   player.elo = c.elo;
+    //   player.hasLoaded = false;
+    //   this.state.players.set(c.sessionId, player);
+    // });
 
     this.onMessage("loaded", (client: Client) => {
       const player = this.state.players.get(client.sessionId);
+      console.log("dans loaded du server, player : ", player)
       if (!player) return;
 
       player.hasLoaded = true;
+      if (this._allPlayersLoaded()) {
+        this.broadcast("begin");
+      }
     });
 
-    const players: string[] = options?.players ?? [];
-    players.forEach(sessionId => {
-      const tower = new TowerState();
-      this.state.towers.set(sessionId, tower);
-    });
-
-    // this.lock();
-
-    this.clock.setInterval(() => this.spawnWave(), this.waveIntervalMs);
+    this.setPrivate();
   }
 
   onJoin(client: Client, options: any) {
-    // Déjà dans create() il faut que tous en même temps
-    // const t = new TowerState();
-    // this.state.towers.set(client.sessionId, t);
+    const player = new PlayerState();
+    player.sessionId = client.sessionId;
+    player.uid = options?.uid;
+    player.username = options?.username;
+    player.elo = options?.elo;
+    player.hasLoaded = false;
+    this.state.players.set(client.sessionId, player);
   }
 
-  spawnWave() {
-    console.log("🌑 Nouvelle Vague !");
-    this.state.towers.forEach((tower, ownerId) => {
-      const e = new EnemyState();
-      e.x = Math.random() * 500;
-      e.y = Math.random() * 500;
-      this.state.enemies.set(ownerId + "_" + Date.now(), e);
-    });
+  _allPlayersLoaded(): boolean {
+    if (this.state.players.size === 0) return false;
+    return Array.from(this.state.players.values()).every(p => p.hasLoaded === true);
   }
 }

@@ -1,7 +1,7 @@
 <script lang="ts">
-  type PlayerState = any; // Remplacez par le type réel
+  type CustomerState = any; // Remplacez par le type réel
 
-  export let p: PlayerState;
+  export let c: CustomerState;
   export let id: string;
   export let room: any;
   export let isLocked: boolean;
@@ -20,14 +20,14 @@
   <div>
     <div style="font-weight:700">
       {#if id === room.state.hostId}👑{/if}
-      {p.username ?? "Guest"}
+      {c.username ?? "Guest"}
     </div>
-    <div class="meta">ELO: {p.elo ?? 1200}</div>
+    <div class="meta">ELO: {c.elo ?? 1200}</div>
   </div>
 
   <div class="right" style="display: flex; gap: 8px;">
-    <div style="color: {p.isReady ? 'var(--success)' : 'var(--muted)'}">
-      {p.isReady ? "✔ READY" : "⏳"}
+    <div style="color: {c.isReady ? 'var(--success)' : 'var(--muted)'}">
+      {c.isReady ? "✔ READY" : "⏳"}
     </div>
 
     {#if id !== room.sessionId}

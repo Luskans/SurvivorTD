@@ -19,7 +19,8 @@
   {:else if $screen === 'lobby'}
     <Lobby />
   {:else}
-    <Game />
+    <!-- <Game /> -->
+    <div class="game-screen"></div>
   {/if}
   <!-- <SvelteToast options={{ intro: { y: -32 } }} /> -->
   <SvelteToast />

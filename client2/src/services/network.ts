@@ -23,8 +23,8 @@ class NetworkService {
     return this.room;
   }
 
-  async joinGame(roomId: string) {
-    this.room = await this.client.joinById(roomId);
+  async joinGame(roomId: string, options?: any) {
+    this.room = await this.client.joinById(roomId, options);
     return this.room;
   }
 

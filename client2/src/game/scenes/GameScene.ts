@@ -105,7 +105,7 @@ import { Room } from "colyseus.js";
 
 
 export class GameScene extends Phaser.Scene {
-  room!: Room<GameState>;;
+  room!: Room<GameState>;
   towers: Map<string, Tower> = new Map();
 
   constructor() {
@@ -117,6 +117,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   create() {
+    console.log("Dans la GameScene.");
     this.createPlayersTowers();
   }
 
