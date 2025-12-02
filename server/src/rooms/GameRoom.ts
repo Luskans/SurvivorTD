@@ -31,7 +31,19 @@ export class GameRoom extends Room<GameState> {
     player.username = options?.username;
     player.elo = options?.elo;
     player.hasLoaded = false;
+    player.isDefeated = false;
+    player.isDisconnected = false;
     this.state.players.set(client.sessionId, player);
+  }
+
+  onLeave(client: Client, consented: boolean) {
+    const player = this.state.players.get(client.sessionId);
+    if (player) {
+      player.hasLoaded = true;
+      player.isDefeated = true;
+      player.isDisconnected = true;
+      this.broadcast("sys", `${player.username} has left the game.`);
+    }
   }
 
   _allPlayersLoaded(): boolean {

@@ -44,7 +44,8 @@ export class LoadingScene extends Phaser.Scene {
     // Assets
     this.load.image("enemy", "assets/enemy.png");
     this.load.image("tower", "assets/tower.png");
-    this.load.image('grass', 'assets/grass.jpg');
+    this.load.image("towerBroken", "assets/towerBroken.png");
+    this.load.image('grass', 'assets/grass.png');
   }
 
   async create() {
