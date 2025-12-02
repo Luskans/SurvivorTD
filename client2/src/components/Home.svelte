@@ -39,7 +39,6 @@
     } catch (e: any) {
       console.error("Error join public:", e);
       const errorMessage = (e.code = 4212) ? "The lobby is full." : (e.message || "Error to join the lobby.");
-      // toast.push("Error to join a public lobby.", { classes: ['custom'] })
       toast.push({ msg: errorMessage, classes: ['custom'] });
     }
   }
@@ -50,7 +49,6 @@
 
     if (!username) {
       if (!setUsername(usernameInput)) {
-        // alert('Invalid username');
         toast.push('Invalid username.', { classes: ['custom'] })
         return;
       }

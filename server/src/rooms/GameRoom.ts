@@ -10,18 +10,6 @@ export class GameRoom extends Room<GameState> {
     console.log(`🚀 Dans la game room ${this.roomId}, les joueurs devraient se co à ca !`);
     this.state = new GameState();
 
-    // const customers: { sessionId: string, uid: string, username: string, elo: number }[] = options?.customers ?? [];
-    // console.log("dans game room server, customers : ", customers)
-    // customers.forEach(c => {
-    //   const player = new PlayerState();
-    //   player.sessionId = c.sessionId;
-    //   player.uid = c.uid;
-    //   player.username = c.username;
-    //   player.elo = c.elo;
-    //   player.hasLoaded = false;
-    //   this.state.players.set(c.sessionId, player);
-    // });
-
     this.onMessage("loaded", (client: Client) => {
       const player = this.state.players.get(client.sessionId);
       console.log("dans loaded du server, player : ", player)

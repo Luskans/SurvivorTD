@@ -86,7 +86,6 @@
         if (room?.sessionId === id) {
           console.log("Déconnexion ou kick détecté.");
           leave();
-          // alert("Vous avez été déconnecté du lobby.");
         }
       }),
     );
@@ -96,41 +95,12 @@
 
     listeners.push(
       room.onMessage("kicked", (msg: string) => {
-        // alert(msg || "You were kicked from this lobby.");
         toast.push("You were kicked from this lobby.", { classes: ['custom'] })
         network.leaveRoom();
         screen.set("home");
       }),
     );
 
-    // listeners.push(
-    //   room.onMessage("start_game", async ({ roomId }: any) => {
-    //     screen.set("game");
-
-    //     await new Promise(resolve => setTimeout(resolve, 50));
-    //     const game = getGame();
-    //     if (!game) return;
-
-    //     game.scene.stop("BootScene");
-    //     game.scene.start("LoadingScene", { roomId });
-        
-    //     network.leaveRoom();
-    //   }),
-    // );
-    // listeners.push(
-    //   room.onMessage("start_game", async ({ roomId }: any) => {
-    //     const gameRoom = await network.joinGame(roomId, { uid: myPlayer.uid, username: myPlayer.username, elo: myPlayer.elo });
-    //     if (!gameRoom) return;
-
-    //     await createGame();
-    //     const game = getGame();
-    //     if (!game) return;
-        
-    //     game.scene.start("LoadingScene", { gameRoom });
-    //     screen.set("game");
-    //     network.leaveRoom();
-    //   }),
-    // );
     listeners.push(
       room.onMessage("start_game", async ({ roomId }: any) => {
         network.leaveRoom();

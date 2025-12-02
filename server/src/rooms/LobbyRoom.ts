@@ -2,7 +2,6 @@ import { Room, Client } from "@colyseus/core";
 import { CustomerState } from "./schema/CustomerState";
 import { LobbyState } from "./schema/LobbyState";
 import { matchMaker } from "colyseus";
-import { ArraySchema } from "@colyseus/schema";
 
 export class LobbyRoom extends Room<LobbyState> {
   maxClients: number = 8;
@@ -72,9 +71,6 @@ export class LobbyRoom extends Room<LobbyState> {
 
   onJoin(client: Client, options: any) {
     console.log(`[Lobby ${this.roomId}] Client ${client.sessionId} rejoint. Clients actuels: ${this.clients.length}`);
-    // if (this.clients.length > this.maxClients) {
-    //     throw new Error("The room is full.");
-    // }
 
     if (this.countdownInterval) {
       this._stopCountdown("Countdown annulé — nouveau joueur a rejoint.");
@@ -135,7 +131,6 @@ export class LobbyRoom extends Room<LobbyState> {
 
   _startCountdown(seconds: number) {
     if (this.countdownInterval) return;
-    // this.lock();
     this.countdownRemaining = seconds;
     this.broadcast("countdown", this.countdownRemaining);
 
@@ -175,7 +170,6 @@ export class LobbyRoom extends Room<LobbyState> {
     }));
 
     const gameRoom = await matchMaker.createRoom("game", {
-      // customers: Array.from(this.state.customers.keys())
       customers: lobbyCustomers
     });
 
