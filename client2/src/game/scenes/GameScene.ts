@@ -129,6 +129,12 @@ export class GameScene extends Phaser.Scene {
     // this.createPlayersTowers();
     this.setupService.createPlayersZone(this.room.state.players);
 
+    const player = this.room.state.players.get(this.room.sessionId)
+    console.log("le player co : ", player)
+    console.log("l'id du player co : ", player.id)
+    console.log("position x de la tower du player co : ", player.tower.position.x)
+    this.cameras.main.centerOn(player.tower.position.x, player.tower.position.y);
+
     $(this.room.state).players.onRemove((p: PlayerState, id: string) => {
       // updatePlayersUI(); // modifier affichage liste des joueurs
       // waveService(); // enlever la vague sur ce joueur

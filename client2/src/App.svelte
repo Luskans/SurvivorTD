@@ -4,6 +4,7 @@
   import Home from './components/Home.svelte';
   import Lobby from './components/Lobby.svelte';
   import Game from './components/Game.svelte';
+  import GameUI from './components/GameUI.svelte';
   import { getOrCreateUID } from './services/player';
   import { SvelteToast } from '@zerodevx/svelte-toast'
 
@@ -21,6 +22,7 @@
   {:else}
     <!-- <Game /> -->
     <div class="game-screen"></div>
+    <GameUI />
   {/if}
   <!-- <SvelteToast options={{ intro: { y: -32 } }} /> -->
   <SvelteToast />
